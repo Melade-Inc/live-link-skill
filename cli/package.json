@@ -1,0 +1,41 @@
+{
+  "name": "live-link",
+  "version": "0.1.0",
+  "description": "Publish a built folder or document to one stable Live.link address from any terminal agent: private draft by default, explicit guarded publishing, same link on every revision.",
+  "type": "module",
+  "bin": {
+    "live-link": "./live-link.mjs"
+  },
+  "files": [
+    "live-link.mjs",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "THIRD_PARTY_NOTICES"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://live.link/start",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Melade-Inc/live-link-skill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Melade-Inc/live-link-skill/issues"
+  },
+  "keywords": [
+    "live.link",
+    "publish",
+    "deploy",
+    "static site",
+    "agent",
+    "skill",
+    "mcp"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

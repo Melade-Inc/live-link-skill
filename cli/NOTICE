@@ -1,0 +1,13 @@
+Live.link CLI and public distribution
+Copyright 2026 Melade, Inc.
+
+The owned work licensed under Apache-2.0 consists of packages/cli/ and
+exactly packages/agent-kit/src/index.js in the source monorepo, and the
+intentionally generated public CLI, skill, wrappers, installer, README and
+workflow in the public distribution.
+
+Other monorepo code, including the private platform and release-engineering
+source, is outside this grant. The individually licensed shared file does not
+license its sibling package. This notice identifies the licensed work; it does
+not modify the Apache License 2.0 terms in LICENSE. Bundled third-party
+software and its licenses are listed in THIRD_PARTY_NOTICES.

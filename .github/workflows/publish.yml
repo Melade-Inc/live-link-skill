@@ -1,0 +1,47 @@
+name: Publish live-link to npm
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+          registry-url: https://registry.npmjs.org
+      - name: Check that the tag matches the pinned version
+        run: |
+          VERSION="$(cat VERSION)"
+          test "${GITHUB_REF_NAME}" = "v${VERSION}" || { echo "Tag ${GITHUB_REF_NAME} does not match VERSION ${VERSION}" >&2; exit 1; }
+          test "$(node -p 'require("./cli/package.json").version')" = "${VERSION}" || { echo "cli/package.json does not match VERSION" >&2; exit 1; }
+      - name: Verify reviewed package and license bytes before execution
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createHash } from 'node:crypto';
+          import { lstat, readFile, readdir } from 'node:fs/promises';
+          const checks = {"cli/live-link.mjs":{"sha256":"119f774ed2fd3af0005db84d98f28e1e2acffaa0c1aa94304554fafab555d547","mode":493},"cli/README.md":{"sha256":"f24acc01a2dd34e138e45b47df9f2f70b7de1a9cb46127ad124c7e9ef1e0ed2e","mode":420},"cli/LICENSE":{"sha256":"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30","mode":420},"cli/NOTICE":{"sha256":"eb024453d493f14a86495e7bae1d0661d08a7e056e028868ba15c1efdd82df64","mode":420},"cli/THIRD_PARTY_NOTICES":{"sha256":"bb5c52d685d8d8e8c2a53c52fb176aed7bd5de328b2ff6e792cdb85d60ecc604","mode":420},"cli/package.json":{"sha256":"926b70af681639f89930a5d7a7fcfbafef74a05c805b21daf958800c4c4f1f68","mode":420},"LICENSE":{"sha256":"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30","mode":420},"NOTICE":{"sha256":"eb024453d493f14a86495e7bae1d0661d08a7e056e028868ba15c1efdd82df64","mode":420},"THIRD_PARTY_NOTICES":{"sha256":"bb5c52d685d8d8e8c2a53c52fb176aed7bd5de328b2ff6e792cdb85d60ecc604","mode":420}};
+          assert.deepEqual((await readdir('cli')).sort(), Object.keys(checks).filter(p => p.startsWith('cli/')).map(p => p.slice(4)).sort());
+          for (const [file, expected] of Object.entries(checks)) {
+            const info = await lstat(file);
+            assert.ok(info.isFile() && !info.isSymbolicLink() && info.nlink === 1, file);
+            assert.equal(info.mode & 0o7777, expected.mode, file);
+            assert.equal(createHash('sha256').update(await readFile(file)).digest('hex'), expected.sha256, file);
+          }
+          const pkg = JSON.parse(await readFile('cli/package.json', 'utf8'));
+          assert.equal(pkg.license, 'Apache-2.0');
+          assert.equal(pkg.scripts, undefined);
+          assert.equal(pkg.dependencies, undefined);
+          NODE
+      - name: Smoke test the bundle
+        run: node cli/live-link.mjs --help >/dev/null
+      - name: Publish with provenance
+        working-directory: cli
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
