@@ -39,7 +39,7 @@ Persist the reviewed publish body including both guards before dispatch; retry u
 
 ## CLI availability
 
-Published CLI, Node 22.12.0 or newer: `npx -y live-link@0.1.0 --help`. Persistent skill for coding agents: `npx skills add Melade-Inc/live-link-skill --skill live-link`. Verify the pin before use; never run an unpinned or unverified package. The CLI supports doctor, init, upload, guarded go, connect and local stdio mcp. go saves privately by default; after approval go <built-folder> --yes --slug <name> --audience <owner|recipients|public> publishes, and subsequent approved go <built-folder> --yes updates the same link. Use go for guarded publishing; the legacy standalone publish command is not the guarded flow. Local stdio MCP is not a hosted cloud connector. Upload recovery resumes an uncertain atomic request; it is not a staged byte-upload service.
+Published CLI, Node 22.12.0 or newer: `npx -y live-link@0.1.1 --help`. Persistent skill for coding agents: `npx skills add Melade-Inc/live-link-skill --skill live-link`. Verify the pin before use; never run an unpinned or unverified package. The CLI supports doctor, init, upload, guarded go, connect and local stdio mcp. go saves privately by default; after approval go <built-folder> --yes --slug <name> --audience <owner|recipients|public> publishes, and subsequent approved go <built-folder> --yes updates the same link. Use go for guarded publishing; the legacy standalone publish command is not the guarded flow. Local stdio MCP is not a hosted cloud connector. Upload recovery resumes an uncertain atomic request; it is not a staged byte-upload service.
 
 ## Host compatibility
 

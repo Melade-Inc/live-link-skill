@@ -1,6 +1,6 @@
 {
   "name": "live-link",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Publish a built folder or document to one stable Live.link address from any terminal agent: private draft by default, explicit guarded publishing, same link on every revision.",
   "type": "module",
   "bin": {

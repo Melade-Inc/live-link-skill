@@ -2,7 +2,7 @@
 # Installs the pinned Live.link CLI globally and runs its diagnostics.
 # Requires Node 22.12 or newer; without one, publish over the HTTP API: https://live.link/start
 set -eu
-PIN="0.1.0"
+PIN="0.1.1"
 if ! command -v node >/dev/null 2>&1; then
   echo "Node 22.12 or newer is required: https://nodejs.org" >&2
   exit 1

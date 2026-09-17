@@ -4,9 +4,9 @@ Published as the npm package `live-link` (Node 22.12 or newer) and the skill `Me
 
 ```sh
 npx skills add Melade-Inc/live-link-skill --skill live-link   # persistent skill for coding agents
-npx -y live-link@0.1.0 go ./dist                              # private draft, returns a dashboard review URL
-npx -y live-link@0.1.0 go ./dist --yes --slug my-app --audience public   # publish after approval; later --yes updates the same link
-npx -y live-link@0.1.0 connect ./dist                         # credential-free local stdio MCP config
+npx -y live-link@0.1.1 go ./dist                              # private draft, returns a dashboard review URL
+npx -y live-link@0.1.1 go ./dist --yes --slug my-app --audience public   # publish after approval; later --yes updates the same link
+npx -y live-link@0.1.1 connect ./dist                         # credential-free local stdio MCP config
 ```
 
 Verify the pin before use; never run an unpinned package. From an authorized source checkout with workspace dependencies installed, the same commands run as:
