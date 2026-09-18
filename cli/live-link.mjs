@@ -100,6 +100,8 @@ function agentDocument() {
     limits: registry.limits,
     hosting: { frontendOnly: true, arbitraryBackendCode: false },
     distribution: registry.distribution,
+    hostedMcp: registry.hostedMcp,
+    agentOAuth: registry.agentOAuth,
     compatibility: registry.hosts,
     unavailable: registry.unavailable
   };
@@ -121,7 +123,7 @@ Create, preview and explicitly publish apps and documents.
 
 ${links}
 
-Authentication: scoped bearer API. Hosted MCP and agent OAuth are unavailable. ${cliCommand({ registry: source }) ? `Published CLI: \`${cliCommand({ registry: source })}\`.` : "Public CLI distribution is not yet published; do not invent an npm install command."}
+Authentication: scoped bearer API or hosted MCP with explicit OAuth consent at https://app.live.link/mcp. Approving a connection is not publication approval. ${cliCommand({ registry: source }) ? `Published CLI: \`${cliCommand({ registry: source })}\`.` : "Public CLI distribution is not yet published; do not invent an npm install command."}
 
 ${limits}
 `;
@@ -140,6 +142,13 @@ Record your source directory, build command, output directory, entrypoint, decla
 ${limits}
 
 ${links}
+`;
+  const connector = `## Connect from Claude.ai, ChatGPT or Grok
+
+Add https://app.live.link/mcp as a custom connector in Claude.ai, ChatGPT developer mode or Grok. Sign in to Live.link, review the client name, redirect target and scopes, and approve the permissions. Then ask the agent to create a private draft and publish after your review. Approving the connection is not publication approval: confirm the version, slug and audience before publishing.
+
+Choose OAuth with public-client dynamic registration. In Claude.ai select Sign in now and Register automatically. Do not supply a dashboard token or client secret. Client ID Metadata Documents (CIMD) are not supported. The connector uses consent-based OAuth without copying a dashboard token into chat. Host permissions and tool confirmation prompts still apply. Preview tools return a dashboard handoff to open while signed in. Preserve both publication guards and the same project and URL on revisions; never refresh guards automatically after a conflict. Browser approval does not configure the CLI. Hosts without custom connectors use the scoped CLI/HTTP path or dashboard handoff.
+
 `;
   const workflow = `## Supported HTTP workflow
 
@@ -163,7 +172,7 @@ ${cliAvailability(source)} The CLI supports doctor, init, upload, guarded go, co
 | --- | --- | --- |
 ${compatibility}
 
-A terminal-capable host can use the reviewed source CLI once authorized. A read-only chat can provide the user with ${source.start} to finish in the dashboard. Hosted MCP and agent OAuth are unavailable until implemented and verified.
+A terminal-capable host can use the reviewed source CLI once authorized. A read-only chat can provide the user with ${source.start} to finish in the dashboard. Hosted MCP is available through explicit OAuth consent; see the dated host verification and limitations above. OAuth credentials authorize only hosted MCP, not REST or the local CLI.
 `;
   const title = kind === "skill" ? "---\nname: live-link\ndescription: Publish reviewed built frontend files or documents through the scoped Live.link HTTP API.\n---\n\n# Live.link publishing skill" : kind === "agents" ? "# Live.link consumer agent instructions" : "# Start with Live.link";
   return `${title}
@@ -178,7 +187,7 @@ ${boundaries}
 
 Read existing repository instructions first. Add project-specific outcome, architecture and acceptance notes alongside them; never overwrite them during setup. An explicit user request and the host's permission controls remain authoritative.
 
-${workflow}
+${connector}${workflow}
 ## Implemented capabilities
 
 | Capability | Endpoint | Scope |
@@ -203,7 +212,9 @@ var init_src = __esm({
       setup: "https://app.live.link/settings",
       openapi: "https://app.live.link/api/v1/openapi",
       // Flip to published only after a verified public npm release; every guide renders its honest variant from this state.
-      distribution: { status: "published", package: "live-link", version: "0.1.1", install: "npx -y live-link@0.1.1", node: ">=22.12.0", skill: "npx skills add Melade-Inc/live-link-skill --skill live-link", installScript: null },
+      distribution: { status: "published", package: "live-link", version: "0.1.2", install: "npx -y live-link@0.1.2", node: ">=22.12.0", skill: "npx skills add Melade-Inc/live-link-skill --skill live-link", installScript: null },
+      hostedMcp: { status: "available", url: "https://app.live.link/mcp", transport: "streamable-http" },
+      agentOAuth: { status: "available", issuer: "https://app.live.link", authorization: "explicit browser consent", resource: "https://app.live.link/mcp" },
       authentication: { type: "bearer", environment: "LIVE_LINK_TOKEN", scopes: ["artifact:read", "artifact:write", "artifact:publish"] },
       limits: { decodedBytesPerVersion: 3145728, requestBytes: 4194304, filesPerVersion: 30, documentBlockBytes: 524288 },
       capabilities: [
@@ -224,15 +235,19 @@ var init_src = __esm({
         { name: "Claude Code", route: "Terminal CLI or HTTP, with host permission", status: "fresh/repeat/resume host acceptance pending" },
         { name: "Cursor", route: "Terminal CLI or HTTP, with host permission", status: "fresh/repeat/resume host acceptance pending" },
         { name: "Hermes", route: "Terminal CLI or HTTP, with host permission", status: "fresh/repeat/resume host acceptance pending" },
-        { name: "ChatGPT / Claude remote chat", route: "Read the guide; use the dashboard handoff", status: "authorized hosted connector and MCP unavailable" }
+        { name: "Claude.ai", route: "Custom connector: https://app.live.link/mcp with OAuth consent", status: "2026-09-17 PASS: consent, private save, preview, publish, same-link revision, stale-guard rejection, revoke and natural refresh. PASS: sign-out denial 17:28:23 UTC and Settings disconnect 17:29:57 UTC. PASS: reconnect 22:18 UTC and authenticated read 22:21 UTC; one live grant 22:23 UTC. Cancel callback payload NOT OBSERVABLE." },
+        { name: "ChatGPT developer mode", route: "Custom connector: https://app.live.link/mcp with OAuth consent", status: "2026-09-17 PASS: consent, authenticated read, private save, preview, publish, same-link revision, stale-guard rejection and revoke. PASS: refresh 17:15:24 UTC, sign-out denial 17:28:23 UTC and Settings disconnect 17:30:04 UTC. PASS: reconnect 22:18 UTC and authenticated read 22:21 UTC; one live grant 22:23 UTC. No separate publish confirmation dialog at default Allow low-risk actions." },
+        { name: "Grok", route: "Custom connector: https://app.live.link/mcp with OAuth consent", status: "2026-09-17 PASS: consent, private save, preview, publish, same-link revision, stale-guard rejection and revoke. PASS: proactive refresh 17:25:18 UTC with tool read after 17:28 UTC, sign-out denial 17:28:23 UTC and Settings disconnect 17:30:22 UTC. PASS: reconnect on one retry 22:20 UTC and authenticated read 22:21 UTC; one live grant 22:23 UTC. Initial re-add failed before authorization. Explicit cancel and expiry-trigger timing NOT OBSERVABLE." }
       ],
-      unavailable: ["Hosted MCP", "Agent OAuth / automatic authorization", "Staged or resumable byte uploads", "Arbitrary customer backend hosting"]
+      unavailable: ["Staged or resumable byte uploads", "Arbitrary customer backend hosting"]
     });
-    boundaries = `Keep credentials in the host's secret environment as LIVE_LINK_TOKEN, never in project files, prompts, URLs, screenshots or logs. Create a revocable credential in Settings \u2192 AI connections. Grant only required scopes; write and publish do not include read. A guide URL cannot install tools or authorize an account. Browser sign-in does not automatically authorize an agent.
+    boundaries = `For terminal CLI or direct HTTP access, keep credentials in the host's secret environment as LIVE_LINK_TOKEN, never in project files, prompts, URLs, screenshots or logs. Create a revocable credential in Settings \u2192 AI connections. Grant only required scopes; write and publish do not include read. A guide URL cannot install tools or authorize an account. Browser sign-in does not automatically authorize an agent.
 
 Build frontend source locally in an isolated environment before upload. Only built HTML/CSS/JavaScript and supported assets are accepted; do not upload source secrets, node_modules, hidden files or backend processes. Apps execute on isolated delivery origins with restricted network capabilities. No arbitrary proxy or tenant backend is available.
 
-Create and save are private. Obtain explicit publication authority and audience before publishing. Preserve the first assigned slug on revisions and restores, including after expiry or revocation. Failed writes must leave the existing live version intact. Keep the latest draft and publication pointers plus publication revision for concurrency checks. Never automatically revive a revoked or expired link or change its audience. Preview URLs contain single-use credentials: do not persist or log them. Logout or credential revocation must end private access.`;
+Create and save are private. Obtain explicit publication authority and audience before publishing. Preserve the first assigned slug on revisions and restores, including after expiry or revocation. Failed writes must leave the existing live version intact. Keep the latest draft and publication pointers plus publication revision for concurrency checks. Never automatically revive a revoked or expired link or change its audience. Preview URLs contain single-use credentials: do not persist or log them. Logout or credential revocation must end private access.
+
+Publish exactly what you previewed. The live origin loads only the files saved in the version, plus Google Fonts (fonts.googleapis.com stylesheets and fonts.gstatic.com font files). Every other external script, stylesheet, image, video, font, iframe and network request is blocked there, even when it worked in the host preview. Accepted files: html, css, js, json, txt, md, csv, pdf, svg, png, jpg, webp, gif, ico, woff and woff2, at most ${registry.limits.filesPerVersion} files and ${Math.round(registry.limits.decodedBytesPerVersion / 1048576)} MB decoded per version; video and audio are not accepted on this transport. Before saving, copy every asset the preview used into the version as a file with a relative path, or inline it as a data: URL. A save response may include warnings naming references the live origin will not load: fix the version and save again, or tell the user exactly what will differ. Never substitute a placeholder, a redrawn graphic or a different creative for an asset that does not fit; stop, tell the user which asset is affected and why, and let them choose. After publishing, fetch the published URL and each referenced asset, and report any difference from the preview.`;
   }
 });
 
@@ -301,7 +316,7 @@ var init_safety = __esm({
 var cliVersion, clientHeader;
 var init_version = __esm({
   "packages/cli/src/version.mjs"() {
-    cliVersion = "0.1.1";
+    cliVersion = "0.1.2";
     clientHeader = `live-link-cli/${cliVersion}`;
   }
 });
@@ -363,7 +378,7 @@ async function doctor({ env = process.env, base = registry.api, fetchImpl = fetc
     if (json?.name === registry.name && Array.isArray(json.capabilities)) discovery = "reachable";
   } catch {
   }
-  return { cliVersion, nodeSupported: nodeSupported(process.versions.node), credentialSource: env.LIVE_LINK_TOKEN ? "environment" : "none", credentialConfigured: Boolean(env.LIVE_LINK_TOKEN), discovery, hosts, distribution: registry.distribution, hostedMcp: "unavailable", agentOAuth: "unavailable", note: "Executable discovery does not grant permission or verify a host integration. Doctor sends no credential and makes no account changes." };
+  return { cliVersion, nodeSupported: nodeSupported(process.versions.node), credentialSource: env.LIVE_LINK_TOKEN ? "environment" : "none", credentialConfigured: Boolean(env.LIVE_LINK_TOKEN), discovery, hosts, distribution: registry.distribution, hostedMcp: registry.hostedMcp.status, agentOAuth: registry.agentOAuth.status, note: "Executable discovery does not grant permission or verify a host integration. Doctor sends no credential and makes no account changes." };
 }
 var init_init = __esm({
   "packages/cli/src/init.mjs"() {
@@ -620,6 +635,7 @@ async function uploadPrepared(prepared, options = {}) {
       state.baseVersionId = current.latestVersionId;
       await store.write(state);
     }
+    let warnings = [];
     if (!state.versionId) {
       const result = await client.request(`/artifacts/${state.artifactId}/versions`, "POST", {
         manifest: prepared.manifest,
@@ -627,9 +643,10 @@ async function uploadPrepared(prepared, options = {}) {
         idempotencyKey: state.saveKey
       });
       state.versionId = requireId(result?.version?.id);
+      warnings = Array.isArray(result?.warnings) ? result.warnings : [];
       await store.write(state);
     }
-    return { status: "private-draft-saved", artifactId: state.artifactId, versionId: state.versionId, reviewUrl: `https://app.live.link/work/${state.artifactId}`, files: prepared.manifest.files.length, bytes: prepared.bytes, excludedFiles: prepared.excluded.length };
+    return { status: "private-draft-saved", artifactId: state.artifactId, versionId: state.versionId, reviewUrl: `https://app.live.link/work/${state.artifactId}`, files: prepared.manifest.files.length, bytes: prepared.bytes, excludedFiles: prepared.excluded.length, ...warnings.length ? { warnings } : {} };
   } finally {
     await store.close();
   }
@@ -749,6 +766,7 @@ async function go(directory, options = {}) {
       await store.write(state);
     }
     const pending = state.pending;
+    let warnings = [];
     if (!pending.versionId) {
       const saved = await uploadPrepared(prepared, {
         ...options,
@@ -761,6 +779,7 @@ async function go(directory, options = {}) {
       });
       state.artifactId = saved.artifactId;
       pending.versionId = saved.versionId;
+      if (Array.isArray(saved.warnings)) warnings = saved.warnings;
       await store.write(state);
     }
     current = artifact(await client.request(`/artifacts/${state.artifactId}`), state.artifactId);
@@ -789,7 +808,7 @@ async function go(directory, options = {}) {
     state.publication = published;
     delete state.pending;
     await store.write(state);
-    return { status: options.yes ? "published" : "private-draft-saved", artifactId: state.artifactId, versionId: state.versionId, reviewUrl: `https://app.live.link/work/${state.artifactId}`, ...published ? { url: `https://${published.slug}.live.link` } : {} };
+    return { status: options.yes ? "published" : "private-draft-saved", artifactId: state.artifactId, versionId: state.versionId, reviewUrl: `https://app.live.link/work/${state.artifactId}`, ...published ? { url: `https://${published.slug}.live.link` } : {}, ...warnings.length ? { warnings } : {} };
   } finally {
     await store.close();
   }
@@ -23188,8 +23207,9 @@ your built output: secret detection is conservative and cannot find every secret
 
 Testing only: --api-base http://127.0.0.1:PORT/api/v1 --allow-localhost
 connect prepares a credential-free local MCP configuration; mcp serves the selected
-built folder over stdio using the same guarded go flow. Hosted MCP, OAuth
-autoauthorization and public npm installation remain unavailable.
+built folder over stdio using the same guarded go flow. Hosted MCP is available at
+https://app.live.link/mcp with explicit OAuth consent in supported connector hosts.
+Connection consent is not publication approval; CLI authentication still uses LIVE_LINK_TOKEN.
 Guide: ${registry.start}
 `;
     valueFlags = /* @__PURE__ */ new Set(["title", "entrypoint", "artifact", "version", "slug", "audience", "recipients", "api-base"]);
