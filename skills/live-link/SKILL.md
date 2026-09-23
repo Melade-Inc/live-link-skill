@@ -15,6 +15,14 @@ Create a useful app or document, preview it privately, then publish one link. Th
 - [Skill](https://live.link/SKILL.md)
 - [Architecture](https://live.link/architecture.md)
 
+## Current connection setup takes precedence
+
+Before connecting, fetch https://live.link/connect.md and https://app.live.link/connect.json for current host setup, availability and recovery. Use https://live.link/AGENTS.md for current agent instructions. The older CLI/HTTP contract below does not override those current setup instructions or the user's authority.
+
+Authenticate first when necessary, verify the workspace and scopes once after setup, then reuse that connection and current host session. Continue the user's already authorized task without asking again for routine reads, edits, private saves or checks. Retain host-required confirmations and explicit publication, new-scope, spending and destructive-action approvals. Never reinstall, log in or spawn a new Codex process for every operation.
+
+Missing tools require a supported host refresh, not another login. Only explicit invalid/expired authentication warrants refresh or reauthorization; a permission denial, network failure or unknown write is not evidence that login must restart. Preserve exact retry identities. If macOS password dialogs repeat, stop repeated credential reads and diagnose the host; never request the Mac password in chat or disable Keychain/security controls. Background runners require separate supported setup and consent; the published CLI does not include the source-preview runner.
+
 ## Authority and local instructions
 
 For terminal CLI or direct HTTP access, keep credentials in the host's secret environment as LIVE_LINK_TOKEN, never in project files, prompts, URLs, screenshots or logs. Create a revocable credential in Settings → AI connections. Grant only required scopes; write and publish do not include read. A guide URL cannot install tools or authorize an account. Browser sign-in does not automatically authorize an agent.
@@ -43,7 +51,7 @@ Base: https://app.live.link/api/v1. Send Authorization: Bearer from the secret e
 4. After approval, GET /artifacts/:id and require artifact.publicationGuardVersion=1. For the first publication POST /artifacts/:id/publish with {versionId,slug,audience,recipients,expiresAt:null,expectedPublishedVersionId:null,expectedPublicationRevision:null}. The guarded path requires read plus publish scopes. If the guard is missing, stop; never retry without it. Audience is owner, recipients (requires email addresses), or public. A successful response contains publication.url.
 5. For revisions GET /artifacts/:id, save with artifact.latestVersionId as baseVersionId, and publish with the exact reviewed artifact.publication.versionId as expectedPublishedVersionId and artifact.publication.revision as expectedPublicationRevision. Keep the same artifact, slug and audience. If the link was revoked, expired or changed outside this action, stop for review rather than reviving it. Restore an earlier compatible version only with explicit authority and both current guards. POST /artifacts/:id/revoke turns off access.
 
-Persist the reviewed publish body including both guards before dispatch; retry uncertain publication with that unchanged body, never refresh guards automatically. Persist a unique idempotency key before create/save. Retry uncertain writes with the exact body and same key. After 409, inspect the current draft/live pointers before choosing a new action; do not silently overwrite concurrent work. Errors use {error:{code,message,traceId,details?}}. Keep only the trace ID for support. On 401/403 reconnect or correct scope; on 413 shrink content; on 429/503 wait or resolve capacity/provider availability.
+Persist the reviewed publish body including both guards before dispatch; retry uncertain publication with that unchanged body, never refresh guards automatically. Persist a unique idempotency key before create/save. Retry uncertain writes with the exact body and same key. After 409, inspect the current draft/live pointers before choosing a new action; do not silently overwrite concurrent work. Errors use {error:{code,message,traceId,details?}}. Keep only the trace ID for support. On invalid/expired authentication follow the current connection recovery guide; on scope/policy denial resolve the stated authority without a login loop; on 413 shrink content; on 429/503 wait or resolve capacity/provider availability.
 
 ## CLI availability
 
