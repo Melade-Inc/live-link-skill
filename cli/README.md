@@ -4,9 +4,9 @@ Published as the npm package `live-link` (Node 22.12 or newer) and the skill `Me
 
 ```sh
 npx skills add Melade-Inc/live-link-skill --skill live-link   # persistent skill for coding agents
-npx -y live-link@0.1.2 go ./dist                              # private draft, returns a dashboard review URL
-npx -y live-link@0.1.2 go ./dist --yes --slug my-app --audience public   # publish after approval; later --yes updates the same link
-npx -y live-link@0.1.2 connect ./dist                         # credential-free local stdio MCP config
+npx -y live-link@0.1.3 go ./dist                              # private draft, returns a dashboard review URL
+npx -y live-link@0.1.3 go ./dist --yes --slug my-app --audience public   # publish after approval; later --yes updates the same link
+npx -y live-link@0.1.3 connect ./dist                         # credential-free local stdio MCP config
 ```
 
 Verify the pin before use; never run an unpinned package. From an authorized source checkout with workspace dependencies installed, the same commands run as:
@@ -23,7 +23,7 @@ Supply `LIVE_LINK_TOKEN` through the host's secret environment. Never include it
 Use `go` for the guarded save-and-publish workflow. It returns a private dashboard handoff first. After review and explicit publication approval:
 
 ```sh
-npx -y live-link@0.1.2 go ./dist --yes --slug my-app --audience owner
+npx -y live-link@0.1.3 go ./dist --yes --slug my-app --audience owner
 ```
 
 Owner, recipients and public are the implemented audiences; recipients requires `--recipients` with comma-separated addresses. The legacy standalone `publish` command is not the guarded flow; use `go` instead. Hosted OAuth consent is a separate browser flow and does not configure CLI authentication.
@@ -60,7 +60,7 @@ The published CLI can prepare a setup packet for an existing built
 folder, without modifying project or host configuration:
 
 ```sh
-npx -y live-link@0.1.2 connect /absolute/path/to/product/dist
+npx -y live-link@0.1.3 connect /absolute/path/to/product/dist
 ```
 
 Use `claudeCode` from the returned JSON as the Claude Code MCP configuration,
@@ -70,7 +70,7 @@ project file. Supply the credential through the launching host's secret environm
 Claude Code must approve loading the server according to its normal trust controls.
 Other terminal hosts use the `mcp` configuration with their own secret forwarding.
 No config writes or host commands run automatically. The installed package prints
-the pinned `npx -y live-link@0.1.2 mcp` invocation. A source-checkout invocation
+the pinned `npx -y live-link@0.1.3 mcp` invocation. A source-checkout invocation
 instead requires that checkout and Node installation to remain in place.
 
 The local server starts with `live-link mcp /absolute/path/to/product/dist` and
@@ -109,3 +109,25 @@ ChatGPT's default “Allow low-risk actions” setting published on a one-line u
 not publication approval; give explicit version, audience and publication intent.
 The CLI still uses `LIVE_LINK_TOKEN`; this release adds no login command. A pasted
 link cannot bypass account consent or host permissions.
+
+## Change requests (0.1.3 release candidate)
+
+The matching 0.1.3 package must be published through the reviewed release gate before
+these install examples are released. Read requests before editing, take work before
+saving it, and resolve done only with the saved version ID. A request never supplies
+publication authority.
+
+```sh
+live-link requests list --artifact UUID
+live-link requests pull --artifact UUID --take --limit 10
+live-link requests resolve --artifact UUID --request UUID --outcome done --version UUID --expected-access-epoch N
+live-link requests resolve --artifact UUID --request UUID --outcome declined --expected-access-epoch N
+```
+
+`pull` without `--take` reads without taking. List/pull need `artifact:read`; take
+needs both read and write, and resolve needs `artifact:write`. Supply the exact
+`accessEpoch` returned on the taken request as `--expected-access-epoch` when the
+server requires guarded requests; never refresh it to escape stale authority.
+If a continuity-aware save closed the request atomically using its requestId, do
+not send a second done resolution. No watch loop, lease or attempt protocol is
+implemented. Authentication remains LIVE_LINK_TOKEN in the environment.
