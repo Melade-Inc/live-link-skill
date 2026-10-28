@@ -74,6 +74,29 @@ var init_node_version = __esm({
   }
 });
 
+// packages/agent-kit/src/skill-guidance.js
+var currentSkillGuidance;
+var init_skill_guidance = __esm({
+  "packages/agent-kit/src/skill-guidance.js"() {
+    currentSkillGuidance = `## Current hosted workflows
+
+This skill supplies instructions, not tools or account authorization. Before the first live.link task in a conversation, read [setup](https://live.link/start.md), [connection discovery](https://app.live.link/connect.json), and the relevant sections of the [hosted skill](https://live.link/SKILL.md). The [docs](https://live.link/docs) provide the overview. Do not open a browser merely to read documentation. An existing authorized MCP connection can supply the guide through live_link_get_guide; inspect live_link_get_capabilities and live_link_check_connection when available and permitted.
+
+The detailed reference below describes this release's legacy CLI/HTTP transport. For current hosted workflows, packaging, limits and eligibility, use the deployment's guide and actual tool schemas. If current guidance cannot be read, do not guess capabilities or downgrade an existing project to a legacy save contract; explain the blocker. Reading guidance does not authorize installation, connection, publication, selling or spending.
+
+Installing this skill does not install or expand the CLI. Published CLI/local MCP commands do not acquire payment tools merely because this skill describes them. Use an existing authorized hosted MCP or scoped HTTP path with the required capability. Reuse a matching authorized connection and current host session. Verify after setup or reconnection, then continue the user's task. Missing tools call for the documented tool-refresh step, not an automatic login loop. Stop and diagnose repeated operating-system credential prompts. Do not create a project simply to test the connection. Never switch environments or identities to bypass a denial.
+
+## Website sales and standalone payment links
+
+Distinguish an ownership-transfer website sale from standalone payment links for goods, digital products, services, invoice payments or deposits. A standalone link needs no website project. Read the relevant current guide and exact schema; enabled tools are not proof of seller eligibility or completed payment. Payment collection is not automatic digital-product delivery or a complete invoicing system.
+
+Reuse explicit authorization for the exact terms and ask only for missing material choices. Use supported Initial fee/Renewal fee combinations and preserve agreed prices. Adding or changing recurring charges requires explicit user instruction. For website sales, a requested Renewal fee is required at purchase unless the seller explicitly makes it optional. Disclose amount, interval, first-charge timing and cancellation terms; seller instructions do not replace buyer checkout consent. Never invent add-ons, multiple plans, ongoing work or fulfillment.
+
+Update an existing payment link with its supported revision guard rather than replacing it for an ordinary correction. Preserve existing purchases and subscriptions; disabling a link does not itself cancel renewals. Website sales must satisfy current source, admission, offer and handover requirements. Never infer payment success or ownership transfer from a return redirect; use verified status. Complete supported work in the current conversation and report the verified link briefly, including necessary financial terms or a real blocker.
+`;
+  }
+});
+
 // packages/agent-kit/src/index.js
 function cliCommand({ registry: source = registry } = {}) {
   const d = source.distribution;
@@ -187,14 +210,14 @@ ${compatibility}
 
 A terminal-capable host can use the reviewed source CLI once authorized. A read-only chat cannot execute edits or publish. Explain the missing tool capability without claiming completion or redirecting routine work to the dashboard. Hosted MCP is available through explicit OAuth consent; see the dated host verification and limitations above. OAuth credentials authorize only hosted MCP, not REST or the local CLI.
 `;
-  const title = kind === "skill" ? "---\nname: live-link\ndescription: Publish reviewed built frontend files or documents through the scoped live.link HTTP API.\n---\n\n# live.link publishing skill" : kind === "agents" ? "# live.link consumer agent instructions" : "# Start with live.link";
+  const title = kind === "skill" ? "---\nname: live-link\ndescription: Preview, publish and update work with live.link, and use authorized hosted tools for supported website sales and standalone payment links.\n---\n\n# live.link publishing skill" : kind === "agents" ? "# live.link consumer agent instructions" : "# Start with live.link";
   return `${title}
 
 Your agent creates and edits the app or document; live.link saves, previews and publishes it at one link. This guide describes the available CLI/HTTP contract; inspect the actual tools and current deployment capabilities before using another transport.
 
 ${links}
 
-## Authority and local instructions
+${kind === "skill" ? currentSkillGuidance + "\n\n" : ""}## Authority and local instructions
 
 ${boundaries}
 
@@ -219,6 +242,7 @@ Not available through this CLI release: ${source.unavailable.join("; ")}.
 var registry, conversationGuidance, privatePreviewGuidance, boundaries;
 var init_src = __esm({
   "packages/agent-kit/src/index.js"() {
+    init_skill_guidance();
     registry = Object.freeze({
       name: "live.link",
       version: "0.1.1",
@@ -227,7 +251,7 @@ var init_src = __esm({
       setup: "https://app.live.link/settings",
       openapi: "https://app.live.link/api/v1/openapi",
       // Release metadata is built into immutable bytes. Local candidates require publication and exact-byte verification before becoming available.
-      distribution: { status: "published", package: "live-link", version: "0.1.4", install: "npx -y live-link@0.1.4", node: ">=22.12.0", skill: "npx skills add Melade-Inc/live-link-skill --skill live-link", installScript: null },
+      distribution: { status: "published", package: "live-link", version: "0.1.5", install: "npx -y live-link@0.1.5", node: ">=22.12.0", skill: "npx skills add Melade-Inc/live-link-skill --skill live-link", installScript: null },
       hostedMcp: { status: "available", url: "https://app.live.link/mcp", transport: "streamable-http" },
       agentOAuth: { status: "available", issuer: "https://app.live.link", authorization: "explicit browser consent", resource: "https://app.live.link/mcp" },
       authentication: { type: "bearer", environment: "LIVE_LINK_TOKEN", scopes: ["artifact:read", "artifact:write", "artifact:publish"] },
@@ -276,7 +300,7 @@ Publish exactly what you previewed. The live origin loads only the files saved i
 var cliVersion, clientHeader;
 var init_version = __esm({
   "packages/cli/src/version.mjs"() {
-    cliVersion = "0.1.4";
+    cliVersion = "0.1.5";
     clientHeader = `live-link-cli/${cliVersion}`;
   }
 });

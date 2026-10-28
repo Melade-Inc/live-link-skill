@@ -1,6 +1,6 @@
 ---
 name: live-link
-description: Publish reviewed built frontend files or documents through the scoped live.link HTTP API.
+description: Preview, publish and update work with live.link, and use authorized hosted tools for supported website sales and standalone payment links.
 ---
 
 # live.link publishing skill
@@ -14,6 +14,23 @@ Your agent creates and edits the app or document; live.link saves, previews and 
 - [Agent instructions](https://live.link/AGENTS.md)
 - [Skill](https://live.link/SKILL.md)
 - [Architecture](https://live.link/architecture.md)
+
+## Current hosted workflows
+
+This skill supplies instructions, not tools or account authorization. Before the first live.link task in a conversation, read [setup](https://live.link/start.md), [connection discovery](https://app.live.link/connect.json), and the relevant sections of the [hosted skill](https://live.link/SKILL.md). The [docs](https://live.link/docs) provide the overview. Do not open a browser merely to read documentation. An existing authorized MCP connection can supply the guide through live_link_get_guide; inspect live_link_get_capabilities and live_link_check_connection when available and permitted.
+
+The detailed reference below describes this release's legacy CLI/HTTP transport. For current hosted workflows, packaging, limits and eligibility, use the deployment's guide and actual tool schemas. If current guidance cannot be read, do not guess capabilities or downgrade an existing project to a legacy save contract; explain the blocker. Reading guidance does not authorize installation, connection, publication, selling or spending.
+
+Installing this skill does not install or expand the CLI. Published CLI/local MCP commands do not acquire payment tools merely because this skill describes them. Use an existing authorized hosted MCP or scoped HTTP path with the required capability. Reuse a matching authorized connection and current host session. Verify after setup or reconnection, then continue the user's task. Missing tools call for the documented tool-refresh step, not an automatic login loop. Stop and diagnose repeated operating-system credential prompts. Do not create a project simply to test the connection. Never switch environments or identities to bypass a denial.
+
+## Website sales and standalone payment links
+
+Distinguish an ownership-transfer website sale from standalone payment links for goods, digital products, services, invoice payments or deposits. A standalone link needs no website project. Read the relevant current guide and exact schema; enabled tools are not proof of seller eligibility or completed payment. Payment collection is not automatic digital-product delivery or a complete invoicing system.
+
+Reuse explicit authorization for the exact terms and ask only for missing material choices. Use supported Initial fee/Renewal fee combinations and preserve agreed prices. Adding or changing recurring charges requires explicit user instruction. For website sales, a requested Renewal fee is required at purchase unless the seller explicitly makes it optional. Disclose amount, interval, first-charge timing and cancellation terms; seller instructions do not replace buyer checkout consent. Never invent add-ons, multiple plans, ongoing work or fulfillment.
+
+Update an existing payment link with its supported revision guard rather than replacing it for an ordinary correction. Preserve existing purchases and subscriptions; disabling a link does not itself cancel renewals. Website sales must satisfy current source, admission, offer and handover requirements. Never infer payment success or ownership transfer from a return redirect; use verified status. Complete supported work in the current conversation and report the verified link briefly, including necessary financial terms or a real blocker.
+
 
 ## Authority and local instructions
 
@@ -51,7 +68,7 @@ Persist the reviewed publish body including both guards before dispatch; retry u
 
 ## CLI availability
 
-Published CLI, Node 22.12.0 or newer: `npx -y live-link@0.1.4 --help`. Persistent skill for coding agents: `npx skills add Melade-Inc/live-link-skill --skill live-link`. Verify the pin before use; never run an unpinned or unverified package. The CLI supports doctor, init, upload, guarded go, connect, requests and local stdio mcp. go saves privately by default; with the user's explicit publication instruction go <built-folder> --yes --slug <name> --audience <owner|recipients|public> publishes, and subsequent approved go <built-folder> --yes updates the same link. Use go for guarded publishing; the legacy standalone publish command is not the guarded flow. Local stdio MCP is not a hosted cloud connector. CLI go/upload retain the legacy epoch-zero save path; they do not save recovered or transferred nonzero-epoch projects. Use an available authorized transport with the required schema for those projects, or explain the blocker. This release does not add continuity saves, payment tools, chat-preview passes or a background runner. Upload recovery resumes an uncertain atomic request; it is not a staged byte-upload service.
+Published CLI, Node 22.12.0 or newer: `npx -y live-link@0.1.5 --help`. Persistent skill for coding agents: `npx skills add Melade-Inc/live-link-skill --skill live-link`. Verify the pin before use; never run an unpinned or unverified package. The CLI supports doctor, init, upload, guarded go, connect, requests and local stdio mcp. go saves privately by default; with the user's explicit publication instruction go <built-folder> --yes --slug <name> --audience <owner|recipients|public> publishes, and subsequent approved go <built-folder> --yes updates the same link. Use go for guarded publishing; the legacy standalone publish command is not the guarded flow. Local stdio MCP is not a hosted cloud connector. CLI go/upload retain the legacy epoch-zero save path; they do not save recovered or transferred nonzero-epoch projects. Use an available authorized transport with the required schema for those projects, or explain the blocker. This release does not add continuity saves, payment tools, chat-preview passes or a background runner. Upload recovery resumes an uncertain atomic request; it is not a staged byte-upload service.
 
 ## Historical host compatibility
 

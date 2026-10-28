@@ -1,15 +1,15 @@
 # live.link CLI
 
-This README describes version **0.1.4** of the `live-link` CLI (Node 22.12 or newer)
+This README describes version **0.1.5** of the `live-link` CLI (Node 22.12 or newer)
 and its matching `Melade-Inc/live-link-skill` guidance. A source checkout or dry run
 does not establish npm or skill publication. Verify that the exact pin is available
 and reviewed before running these installation examples; never use an unpinned CLI package.
 
 ```sh
 npx skills add Melade-Inc/live-link-skill --skill live-link   # persistent skill for coding agents
-npx -y live-link@0.1.4 go ./dist                              # private draft; optional dashboard review URL
-npx -y live-link@0.1.4 go ./dist --yes --slug my-app --audience public   # use exact publication authority; later --yes keeps the same link
-npx -y live-link@0.1.4 connect ./dist                         # credential-free local stdio MCP config
+npx -y live-link@0.1.5 go ./dist                              # private draft; optional dashboard review URL
+npx -y live-link@0.1.5 go ./dist --yes --slug my-app --audience public   # use exact publication authority; later --yes keeps the same link
+npx -y live-link@0.1.5 connect ./dist                         # credential-free local stdio MCP config
 ```
 
 The existing skill installer follows the public repository's default branch; it
@@ -31,7 +31,7 @@ Reuse a usable scoped `LIVE_LINK_TOKEN` through the host's secret environment. N
 Use `go` for the guarded save-and-publish workflow. Without `--yes`, it saves privately and returns a version ID and optional dashboard review URL. Review that exact saved version using available authorized preview tools. The CLI does not render previews or return private reader credentials; report a missing preview capability instead of claiming a review occurred. Publish only under explicit user authority for the reviewed content, slug and audience. Reuse existing matching authority; ask only for missing or changed scope:
 
 ```sh
-npx -y live-link@0.1.4 go ./dist --yes --slug my-app --audience owner
+npx -y live-link@0.1.5 go ./dist --yes --slug my-app --audience owner
 ```
 
 Owner, recipients and public are the implemented audiences; recipients requires `--recipients` with comma-separated addresses. The legacy standalone `publish` command is not the guarded flow; use `go` instead. Hosted OAuth consent is a separate browser flow and does not configure CLI authentication.
@@ -74,7 +74,7 @@ The CLI can prepare a setup packet for an existing built
 folder, without modifying project or host configuration:
 
 ```sh
-npx -y live-link@0.1.4 connect /absolute/path/to/product/dist
+npx -y live-link@0.1.5 connect /absolute/path/to/product/dist
 ```
 
 Use `claudeCode` from the returned JSON as the Claude Code MCP configuration,
@@ -84,7 +84,7 @@ project file. Supply the credential through the launching host's secret environm
 Honor Claude Code's normal server trust controls; reuse an already usable setup.
 Other terminal hosts use the `mcp` configuration with their own secret forwarding.
 No config writes or host commands run automatically. The installed package prints
-the pinned `npx -y live-link@0.1.4 mcp` invocation. A source-checkout invocation
+the pinned `npx -y live-link@0.1.5 mcp` invocation. A source-checkout invocation
 instead requires that checkout and Node installation to remain in place.
 
 The local server starts with `live-link mcp /absolute/path/to/product/dist` and
@@ -117,7 +117,7 @@ version and reuse existing publication authority that covers its content, slug a
 audience; ask only when that authority is missing or materially changes.
 
 Hosted MCP and consent-based OAuth are active. The following historical evidence
-does not establish named-host acceptance of version 0.1.4. On September 17, 2026, Claude.ai,
+does not establish named-host acceptance of version 0.1.5. On September 17, 2026, Claude.ai,
 ChatGPT developer mode and Grok passed private save, preview handoff, approved
 public publication, one same-link revision, controlled stale-guard rejection and
 revocation. Natural rotation passed at 16:29:13 UTC (Claude.ai), 17:15:24 UTC
