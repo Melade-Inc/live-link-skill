@@ -1,15 +1,15 @@
 # live.link CLI
 
-This README describes version **0.1.5** of the `live-link` CLI (Node 22.12 or newer)
+This README describes version **0.1.6** of the `live-link` CLI (Node 22.12 or newer)
 and its matching `Melade-Inc/live-link-skill` guidance. A source checkout or dry run
 does not establish npm or skill publication. Verify that the exact pin is available
 and reviewed before running these installation examples; never use an unpinned CLI package.
 
 ```sh
 npx skills add Melade-Inc/live-link-skill --skill live-link   # persistent skill for coding agents
-npx -y live-link@0.1.5 go ./dist                              # private draft; optional dashboard review URL
-npx -y live-link@0.1.5 go ./dist --yes --slug my-app --audience public   # use exact publication authority; later --yes keeps the same link
-npx -y live-link@0.1.5 connect ./dist                         # credential-free local stdio MCP config
+npx -y live-link@0.1.6 go ./dist                              # private draft; optional dashboard review URL
+npx -y live-link@0.1.6 go ./dist --yes --slug my-app --audience public   # use exact publication authority; later --yes keeps the same link
+npx -y live-link@0.1.6 connect ./dist                         # credential-free local stdio MCP config
 ```
 
 The existing skill installer follows the public repository's default branch; it
@@ -31,12 +31,12 @@ Reuse a usable scoped `LIVE_LINK_TOKEN` through the host's secret environment. N
 Use `go` for the guarded save-and-publish workflow. Without `--yes`, it saves privately and returns a version ID and optional dashboard review URL. Review that exact saved version using available authorized preview tools. The CLI does not render previews or return private reader credentials; report a missing preview capability instead of claiming a review occurred. Publish only under explicit user authority for the reviewed content, slug and audience. Reuse existing matching authority; ask only for missing or changed scope:
 
 ```sh
-npx -y live-link@0.1.5 go ./dist --yes --slug my-app --audience owner
+npx -y live-link@0.1.6 go ./dist --yes --slug my-app --audience owner
 ```
 
-Owner, recipients and public are the implemented audiences; recipients requires `--recipients` with comma-separated addresses. The legacy standalone `publish` command is not the guarded flow; use `go` instead. Hosted OAuth consent is a separate browser flow and does not configure CLI authentication.
+Owner, recipients and public are the implemented audiences; recipients requires `--recipients` with comma-separated addresses. Use `go` for the folder journey. Direct `publish` also freezes the selected immutable version, project epoch and publication revision before dispatch. Hosted OAuth consent is a separate browser flow and does not configure CLI authentication.
 
-`init` preserves existing files byte for byte. It creates `.live-link/AGENTS.md`, architecture, capabilities and acceptance notes only when missing. It creates a root `AGENTS.md` only if none exists; otherwise the host must explicitly read `.live-link/AGENTS.md` alongside its own instructions. Repeat initialization fills only missing files and never rewrites local notes.
+`init` preserves existing files byte for byte. It creates `.live-link/AGENTS.md`, architecture, capabilities, acceptance notes and the complete realtime SDK guide only when missing. It creates a root `AGENTS.md` only if none exists; otherwise the host must explicitly read `.live-link/AGENTS.md` alongside its own instructions. Repeat initialization fills only missing files and never rewrites local notes.
 
 `upload` accepts a real built output directory and preserves nested paths. It rejects symlinks, hardlinks, traversal, duplicate case-insensitive paths, unsupported formats and possible credentials; it excludes hidden files, known secret filenames, dependency directories and source maps. Detection does not prove that content has no secrets. The server remains authoritative for format, signatures, hashes, size, scope and workspace validation.
 
@@ -68,13 +68,47 @@ publication guards and stops when the server lacks them or reports a conflict.
 Never retry a conflict by refreshing the guards automatically. This does not prove
 unattended operation in every agent host; named-host acceptance is recorded separately.
 
+## Temporary collaboration
+
+Read the complete SDK contract before authoring: `live-link guide realtime`,
+the local MCP `live_link_get_guide` tool with `section: "realtime"`, or the
+current deployment's `/realtime.md`. It includes a runnable HTML reference,
+`onTransient`, `remove`, `snapshot().pending`/`retryPending()` recovery and byte budgets.
+
+```sh
+npx -y live-link@0.1.6 guide realtime
+npx -y live-link@0.1.6 go ./dist --runtime realtime-v1
+```
+
+The runtime declaration is part of the immutable manifest. Saving remains private;
+only an explicitly approved public publication can join a room. Before an explicit
+realtime upload, the CLI checks current deployment capability without credentials.
+Installation does not enable the service. If unavailable, preserve the declaration
+and report the blocker. The CLI keeps its existing production API origin; it does
+not accept arbitrary remote API destinations or reuse production credentials on stage.
+
+Omitting `--runtime` on a revision inherits the exact immutable base's declaration;
+`--runtime none` explicitly removes collaboration. The CLI freezes the base version
+and current `expectedAccessEpoch` before dispatch. An uncertain retry preserves
+the original runtime, body, credential and epoch. It cannot refresh authority.
+
+Supply private authoring source only when explicitly selected:
+`--continuity /path/to/source.private.json`. This is the full continuity package
+(schemaVersion, files, build, decisions, pendingWork, evidence), limited to 2 MiB
+and the complete request's 4 MiB budget. Its exact file is excluded from public
+assets even when inside the output folder. Recovery journals store hashes, not
+source contents. Omission sends no package and never copies prior private source.
+Local MCP save/publish accept `runtime` and an ordinary relative `continuityFile`
+inside the selected folder. Request-bound saves and static-business-site-v1
+lineage continue through their supported hosted admission workflow.
+
 ## Terminal MCP setup
 
 The CLI can prepare a setup packet for an existing built
 folder, without modifying project or host configuration:
 
 ```sh
-npx -y live-link@0.1.5 connect /absolute/path/to/product/dist
+npx -y live-link@0.1.6 connect /absolute/path/to/product/dist
 ```
 
 Use `claudeCode` from the returned JSON as the Claude Code MCP configuration,
@@ -84,11 +118,11 @@ project file. Supply the credential through the launching host's secret environm
 Honor Claude Code's normal server trust controls; reuse an already usable setup.
 Other terminal hosts use the `mcp` configuration with their own secret forwarding.
 No config writes or host commands run automatically. The installed package prints
-the pinned `npx -y live-link@0.1.5 mcp` invocation. A source-checkout invocation
+the pinned `npx -y live-link@0.1.6 mcp` invocation. A source-checkout invocation
 instead requires that checkout and Node installation to remain in place.
 
 The local server starts with `live-link mcp /absolute/path/to/product/dist` and
-exposes `live_link_check`, `live_link_save`, and `live_link_publish`. Only the startup
+exposes `live_link_get_guide`, `live_link_check`, `live_link_save`, and `live_link_publish`. Only the startup
 folder is accessible. This stdio transport is for terminal hosts; cloud chat hosts
 use the hosted connector below. Save is private and its dashboard review URL is
 optional. Review the exact saved version with available authorized preview tools;
@@ -117,7 +151,7 @@ version and reuse existing publication authority that covers its content, slug a
 audience; ask only when that authority is missing or materially changes.
 
 Hosted MCP and consent-based OAuth are active. The following historical evidence
-does not establish named-host acceptance of version 0.1.5. On September 17, 2026, Claude.ai,
+does not establish named-host acceptance of version 0.1.6. On September 17, 2026, Claude.ai,
 ChatGPT developer mode and Grok passed private save, preview handoff, approved
 public publication, one same-link revision, controlled stale-guard rejection and
 revocation. Natural rotation passed at 16:29:13 UTC (Claude.ai), 17:15:24 UTC
